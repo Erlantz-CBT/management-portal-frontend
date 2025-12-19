@@ -1,0 +1,109 @@
+# Default values for application.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# String to partially override application.fullname template (will maintain the release name).
+nameOverride: ""
+# String to fully override application.fullname template.
+fullnameOverride: ""
+# Deploy all the components in specific K8s node(s).
+chartNodeSelector: {}
+
+# Component frontend values.
+frontend:
+  tier: external
+  replicaCount: 1
+
+  # Configuration of the container image.
+  imagePullSecrets:
+    - name: aeros-common-deployments
+  image:
+    repository: registry.gitlab.aeros-project.eu/aeros-public/common-deployments/management-portal/frontend
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+    pullPolicy: IfNotPresent
+ 
+  # Configuration of the service: type and ports.
+  service:
+    type: NodePort
+    ports:
+      web:
+        port: 80
+        targetPort: 80
+        containerPort: 80
+        nodePort: ""
+        protocol: TCP
+
+  ingress:
+    certManagerIssuer: letsencrypt-prod
+    certManagerClusterIssuer: letsencrypt-prod
+    cors: true
+    className: nginx
+    enabled: false
+    hostname: portal-mvp.aeros-project.eu
+    path: "/"
+    tls: 
+      enabled: true
+
+  resources: {}
+  autoscaling:
+    enabled: false
+  podSecurityContext: {}
+  securityContext: {}
+
+  keycloak:
+    realm: keycloack-openldap
+    url: https://keycloak.cf-mvp-domain.aeros-project.eu/auth/
+    sslRequired: all
+    resource: managementportal
+    
+  # Configure this parameters to deploy the component in specific K8s node(s).
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Component backend values.
+backend:
+  tier: internal
+  replicaCount: 1
+
+  # Configuration of the container image.
+  imagePullSecrets:
+    - name: aeros-common-deployments
+  image:
+    repository: registry.gitlab.aeros-project.eu/aeros-public/common-deployments/management-portal/backend
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+    pullPolicy: IfNotPresent
+  
+  # Configuration of the service: type and ports.
+  service:
+    type: NodePort
+    ports:
+      api:
+        port: 8080
+        targetPort: 8080
+        containerPort: 8080
+        nodePort: ""
+        protocol: TCP
+
+  resources: {}
+  autoscaling:
+    enabled: false
+
+  podSecurityContext: {}
+  securityContext: {}
+    
+  # Include here the environment variables to be used in containers section of the component's manifest.
+  envVars:
+    logLevel: DEBUG
+    securityLogLevel: DEBUG
+    orionUrl: http://orion-ld-broker:1026/ngsi-ld/v1/entities
+    keycloakUrl: https://keycloak.cf-mvp-domain.aeros-project.eu/auth/realms/keycloack-openldap/protocol/openid-connect/certs
+    hloFeUrl: http://hlo-fe-service:8081
+
+  # Configure this parameters to deploy the component in specific K8s node(s).
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+

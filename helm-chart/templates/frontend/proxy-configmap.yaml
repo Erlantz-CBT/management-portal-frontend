@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-proxy-config" (include "frontend.fullname" .) }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "frontend.labels" . | nindent 4 }}
+data:
+  managementportal.conf: |
+    server {
+        listen   80;
+        server_name ~^(.+)$;
+        root /usr/share/nginx/html;
+        client_max_body_size 100M;
+        resolver kube-dns.kube-system.svc.cluster.local;
+
+        error_log  /var/log/nginx/error.log info;
+        access_log  /var/log/nginx/access.log;
+        
+        proxy_read_timeout 20;
+        proxy_connect_timeout 20;
+        proxy_send_timeout 20; 
+        
+        # Disabling cache so the browser won't cache the website
+        expires           0;
+        add_header        Cache-Control private;
+
+        location ~* \.(eot|ttf|otf|woff|woff2)$ {
+            add_header Access-Control-Allow-Origin *;
+        }
+
+        location ~*  \.(jpg|jpeg|png|gif|ico|css|js)$ {
+            expires 168h;
+            add_header Pragma public;
+            add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+        }
+
+        location / {
+            # try_files $uri $uri/ /aeros/index.html;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Server $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+
+        # location = / {
+        #     rewrite "^.*$" /aeros/index.html break;
+        # }
+
+        location /portal-backend/ {
+            proxy_pass http://{{ include "backend.fullname" . }}:{{ .Values.backend.service.ports.api.port }}/portal-backend/;
+        }
+
+        error_page 404 /404.html;
+            location = /40x.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+            root /usr/share/nginx/html;
+        }
+    }

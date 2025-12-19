@@ -1,0 +1,6 @@
+{
+  "realm": "keycloack-openldap",
+  "auth-server-url": "https://keycloak.cf-mvp-domain.aeros-project.eu/auth/",
+  "ssl-required": "all",
+  "resource": "managementportal"
+}

@@ -1,0 +1,32 @@
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Dependency directory
+node_modules
+
+# Docker 
+*Dockerfile*
+*docker-compose*
+
+# Kubernetes
+kubernetes
+k8s-manifests
+helm-chart
+
+# git
+.git

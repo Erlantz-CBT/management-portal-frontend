@@ -1,0 +1,38 @@
+{{- if .Values.frontend.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ printf "%s-ingress" (include "frontend.fullname" .) }}
+  namespace: {{ .Release.Namespace | quote }}
+  annotations:
+    {{- if .Values.frontend.ingress.certManagerIssuer }}
+    cert-manager.io/issuer: {{ .Values.frontend.ingress.certManagerIssuer }}
+    {{- else if .Values.frontend.ingress.certManagerClusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.frontend.ingress.certManagerClusterIssuer }}
+    {{- end }}
+    {{- if .Values.frontend.ingress.cors }}
+    nginx.ingress.kubernetes.io/cors-allow-origin: {{ include "frontend.cors.allowOrigin" . }}
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.frontend.ingress.className }}
+  {{- if .Values.frontend.ingress.tls.enabled }}
+  tls:
+    {{- with .Values.frontend.ingress }}
+    - hosts:
+       - {{ .hostname }}
+      secretName: {{ printf "%s-tls" .hostname }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.frontend.ingress.hostname | quote}}
+      http:
+        paths:
+          - path: {{ .Values.frontend.ingress.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "frontend.fullname" . }}
+                port:
+                  number: {{ .Values.frontend.service.ports.web.port }}
+{{- end }}
