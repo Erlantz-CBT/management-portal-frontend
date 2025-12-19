@@ -4,6 +4,7 @@ import Keycloak from "keycloak-js";
 
 const keycloak = new Keycloak()
 
+
 interface CbOneParam<T1 = void, T2 = void> {
     (param1: T1): T2;
 }
@@ -16,7 +17,7 @@ interface CbOneParam<T1 = void, T2 = void> {
 
 const Login = (onAuthenticatedCB: CbOneParam) => {
     keycloak
-        .init({onLoad: "login-required"})
+        .init({onLoad: "login-required", responseMode: "query"})
         .then(function (authenticated) {
             authenticated ? onAuthenticatedCB() : alert("non authenticated user");
             if (authenticated) {
@@ -39,6 +40,18 @@ const UpdateToken = () => {
     return keycloak.updateToken(30)
 }
 
+const RefreshToken = () => {
+    return keycloak.onTokenExpired = () => {
+        keycloak.updateToken(30)
+            .then(() => {
+                localStorage.setItem("token", <string>keycloak.token)
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+    }
+}
+
 const getToken = () => {
     return keycloak.token
 }
@@ -48,12 +61,14 @@ const getUser = () => {
 }
 
 
+
 const KeycloakService = {
     CallLogin: Login,
     CallLogout: Logout,
     User: getUser,
     Token: getToken,
-    UpdateToken
+    UpdateToken,
+    RefreshToken
 }
 
 export default KeycloakService

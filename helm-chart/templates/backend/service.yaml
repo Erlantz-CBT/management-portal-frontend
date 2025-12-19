@@ -15,5 +15,12 @@ spec:
       {{- if and (or (eq .Values.backend.service.type "NodePort") (eq .Values.backend.service.type "LoadBalancer")) (not (empty .Values.backend.service.ports.api.nodePort)) }}
       nodePort: {{ .Values.backend.service.ports.api.nodePort }}
       {{- end }}
+    - name: notifications
+      port: {{ .Values.backend.service.ports.notifications.port }}
+      targetPort: {{ .Values.backend.service.ports.notifications.targetPort }}
+      protocol: {{ .Values.backend.service.ports.notifications.protocol }}
+      {{- if and (or (eq .Values.backend.service.type "NodePort") (eq .Values.backend.service.type "LoadBalancer")) (not (empty .Values.backend.service.ports.notifications.nodePort)) }}
+      nodePort: {{ .Values.backend.service.ports.notifications.nodePort }}
+      {{- end }}
   selector:
     {{- include "backend.selectorLabels" . | nindent 4 }}

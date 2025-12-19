@@ -4,6 +4,14 @@ import axios from 'axios'
 /**
  * Domain store
  */
+
+interface Anomaly {
+    toleranceThresholdAnomaly: number;
+    toleranceThresholdNormal: number;
+    windowAnomaly: number;
+    windowNormal: number;
+}
+
 export const useDomainStore = defineStore('domain', {
     state: () => ({
         domains: [],
@@ -20,20 +28,24 @@ export const useDomainStore = defineStore('domain', {
     actions: {
         fetchDomains() {
             return axios
-                .get(`/portal-backend/${process.env.VUE_APP_DOMAINS_ENDPOINT}/domains`, {timeout: 5000})
+                .get(`/portal-backend/${process.env.VUE_APP_DOMAINS_ENDPOINT}/domains`)
         },
         fetchDomain(domainId: string) {
             return axios
                 .get(`/portal-backend/${process.env.VUE_APP_DOMAINS_ENDPOINT}/domains/urn:ngsi-ld:Domain:${domainId}`)
         },
-        fetchIEList() {
-            return axios
-                .get(`/portal-backend/${process.env.VUE_APP_DOMAINS_ENDPOINT}/infrastructure-elements`)
-        },
         fetchIE(domainId: string) {
             return axios
                 .get(`/portal-backend/${process.env.VUE_APP_DOMAINS_ENDPOINT}/domains/urn:ngsi-ld:Domain:${domainId}/infrastructure-elements`)
-
+        },
+        fetchSelfIE(ieID: string, type: string) {
+            return axios
+                .get(`/portal-backend/self/${ieID}/optimization/anomaly/parameters/${type}`)
+                .then(res => res.data)
+        },
+        updateSelfIE(ieID: string, body: Anomaly, type: string) {
+            return axios
+                .put(`/portal-backend/self/${ieID}/optimization/anomaly/parameters/${type}`, body)
         }
     }
 })

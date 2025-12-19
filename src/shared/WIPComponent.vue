@@ -1,5 +1,7 @@
 <template>
-  <h2>Work in progress <font-awesome-icon :icon="['fa', 'screwdriver-wrench']" /></h2>
+  <div style="display: grid; height: 100vh; width: 100%">
+    <h2>{{ $t('wip.workInProgress') }} <font-awesome-icon :icon="['fa', 'screwdriver-wrench']" /></h2>
+  </div>
 </template>
 
 <script lang="ts">
@@ -11,5 +13,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
+h2 {
+  align-self: center;
+  justify-self: center;
+}
 
 </style>

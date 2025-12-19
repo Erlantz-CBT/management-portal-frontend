@@ -1,53 +1,48 @@
 <template>
   <div class="toast-container">
-    <div class="toast" :ref="(el) => {registerRemove(el, index)}" :class="toast.success ? 'success' : 'fail'" style="margin-top: 10px" v-for="(toast, index) in toasts" :key="toast">
-      {{toast.label}}
-      <font-awesome-icon
-          style="margin-left: 10px; cursor: pointer"
-          aria-placeholder="Remove"
-          :icon="['fas', 'xmark']"
-          @click="(event) => manualRemove(index, event.target)"
-      />
-    </div>
+    <TransitionGroup>
+      <div
+          class="toast"
+          :class="toast.success ? 'success' : 'fail'"
+          style="margin-top: 10px"
+          v-for="toast in toasts"
+          :key="toast">
+        {{toast.label}}
+        <font-awesome-icon
+            style="margin-left: 10px; cursor: pointer"
+            aria-placeholder="Remove"
+            :icon="['fas', 'xmark']"
+            @click="manualRemove(toast)"
+        />
+      </div>
+    </TransitionGroup>
   </div>
+
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref, watchEffect} from "vue";
+import {defineComponent, ref} from "vue";
 import {useToastsStore} from "@/stores/toasts";
 
 export default defineComponent({
   name: "ToastsComponent",
   setup: () => {
     const toastsStore = useToastsStore()
-    const toasts = reactive(toastsStore.toasts)
+    const toasts = ref([])
+    toastsStore.$onAction(({after}) => {
+      after((result: any) => {
+        // When a remove/add actions is performed, set the local ref
+        toasts.value = result
+      })
+    })
     return {
       toastsStore,
       toasts
     }
   },
   methods: {
-    registerRemove(el: any, index: number) {
-      if (el){
-        setTimeout(() => {
-          el.style.opacity = 1
-        }, 100)
-        setTimeout(() => {
-          el.style.opacity = 0
-          this.removeToast(index)
-        }, 3000)
-      }
-    },
-    removeToast(index: number) {
-      setTimeout(() => {
-        this.toastsStore.removeToast(index)
-      }, 1000)
-    },
-    manualRemove(index: number, el: any) {
-      el.parentNode.parentNode.style.opacity = 0;
-      setTimeout(() => {
-        this.toastsStore.removeToast(index)
-      }, 500)
+    manualRemove(toast: any) {
+      this.toastsStore.removeToast(toast)
     }
   }
 })
@@ -55,24 +50,38 @@ export default defineComponent({
 
 <style scoped>
 
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 150ms ease-in-out;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
 .toast-container {
   position: absolute;
-  width: 100vw;
+  max-height: 100vh;
   justify-content: center;
+  justify-self: center;
   top: 0;
   display: grid;
   align-content: end;
   padding-bottom: 10px;
+  z-index: 200;
 
 }
 
 .toast {
   margin-top: 10px;
   border-radius: 10px;
-  padding: 10px;
-  font-size: .8rem;
-  opacity: 0;
+  padding: 15px;
+  font-size: .9rem;
   transition: opacity 0.2s ease-in-out;
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
 }
 .success {
   color: white;

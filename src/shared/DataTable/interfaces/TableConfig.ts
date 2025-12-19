@@ -6,7 +6,17 @@ interface TableColumnsWidths {
     columnWidth: Array<string>
 }
 
+interface Pagination {
+    items?: number;
+    pages?: number;
+}
+
 export interface TableConfig {
     tableStyle?: any;
-    style?: TableColumnsWidths
+    // Deprecated: Columns widths moved inside each column definition
+    style?: TableColumnsWidths;
+    pagination?: Pagination;
+    sized?: boolean;
+    // Prototype: Table with this parameter will have a transition on pagination change
+    animated?: boolean;
 }

@@ -8,11 +8,21 @@ metadata:
 data:
   managementportal.conf: |
     server {
+        {{- if .Values.frontend.tls.enabled }}
+        listen 443 ssl;
+        {{- else }}
         listen   80;
+        {{- end }}
         server_name ~^(.+)$;
         root /usr/share/nginx/html;
         client_max_body_size 100M;
-        resolver kube-dns.kube-system.svc.cluster.local;
+        resolver {{ .Values.frontend.proxyDnsResolver }};
+        
+        {{- if .Values.frontend.tls.enabled }}
+        # TLS certificates
+        ssl_certificate     /etc/nginx/certs/cert.pem;
+        ssl_certificate_key /etc/nginx/certs/key.pem;
+        {{- end }}
 
         error_log  /var/log/nginx/error.log info;
         access_log  /var/log/nginx/access.log;
@@ -36,18 +46,29 @@ data:
         }
 
         location / {
-            # try_files $uri $uri/ /aeros/index.html;
+            # try_files $uri $uri/ /aerios/index.html;
             proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Forwarded-Server $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
 
         # location = / {
-        #     rewrite "^.*$" /aeros/index.html break;
+        #     rewrite "^.*$" /aerios/index.html break;
         # }
 
         location /portal-backend/ {
             proxy_pass http://{{ include "backend.fullname" . }}:{{ .Values.backend.service.ports.api.port }}/portal-backend/;
+        }
+
+        location /notifications/ {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $host;
+
+            proxy_pass http://{{ include "backend.fullname" . }}:{{ .Values.backend.service.ports.notifications.port }}/notifications/;
+
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
         }
 
         error_page 404 /404.html;

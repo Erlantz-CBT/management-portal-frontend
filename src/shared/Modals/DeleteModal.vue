@@ -1,9 +1,9 @@
 <template>
   <h3>
-    Delete service
+    {{ $t(data.header) }}
   </h3>
-  <p style="height: 150px">
-    Are you sure to delete Service <b>{{data}}</b>?
+  <p style="height: 150px; padding-top: 15px">
+    <b>{{$t(data?.actionDescription || "general.deleteConfirm")}}: {{data?.subtitle}}</b>?
   </p>
   <div style="display: flex; justify-content: space-between">
     <button @click="$emit('back')" class="cancel">Back</button>
@@ -21,9 +21,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-h2, h3, p {
-  color: #004AAD;
-}
 
 .confirm , .cancel {
   border: none;

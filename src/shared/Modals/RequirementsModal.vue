@@ -1,15 +1,41 @@
 <template>
-  <h3>
+  <h3 :class="settingsStore.colorScheme === 'dark' ? 'dark' : 'light'">
     IE {{data.index}} CLI arguments/ENV variables
   </h3>
   <div class="requirements">
     <div class="requirement" v-for="(requirement, index) in requirements" :key="requirement">
-      <select style="width: 65px" v-model="requirement.type" name="type" class="stepper-input" id="type">
-        <option value="CLI">CLI</option>
-        <option value="ENV">ENV</option>
+      <select
+          style="width: 65px"
+          v-model="requirement.type"
+          :class="settingsStore.colorScheme === 'dark' ? 'dark' : 'light'"
+          class="stepper-input" id="type">
+        <option
+            :style="{
+                'color': settingsStore.colorScheme === 'dark' ? '#ffffff' : '#000000',
+                'background-color':  settingsStore.colorScheme === 'dark' ? '#0F0F0F' : '#ffffff'
+            }"
+            value="CLI">
+          CLI
+        </option>
+        <option
+            :style="{
+                'color': settingsStore.colorScheme === 'dark' ? '#ffffff' : '#000000',
+                'background-color':  settingsStore.colorScheme === 'dark' ? '#0F0F0F' : '#ffffff'
+            }"
+            value="ENV">
+          ENV
+        </option>
       </select>
-      <input class="stepper-input" v-model="requirement.key" type="text">
-      <input class="stepper-input" v-model="requirement.value" type="text">
+      <input
+          :class="settingsStore.colorScheme === 'dark' ? 'dark' : 'light'"
+          class="stepper-input"
+          v-model="requirement.key"
+          type="text">
+      <input
+          :class="settingsStore.colorScheme === 'dark' ? 'dark' : 'light'"
+          class="stepper-input"
+          v-model="requirement.value"
+          type="text">
       <a class="remove" @click="removeRequirement(index)">
         <font-awesome-icon icon="trash"></font-awesome-icon>
       </a>
@@ -24,6 +50,7 @@
 
 <script lang="ts">
 import {defineComponent, reactive} from "vue";
+import {useSettings} from "@/stores/settings";
 
 interface Requirement {
   key: string | null;
@@ -35,10 +62,12 @@ export default defineComponent({
   name: "RequirementsModal",
   props: ['data'],
   data () {
+    const settingsStore = useSettings()
     const ieRequirements = this.data.service?.fields.find((f: { fieldName: string; }) => f.fieldName == "arguments")?.field
     const requirements = reactive([...ieRequirements] as Requirement[])
     return {
-      requirements
+      requirements,
+      settingsStore
     }
   },
   methods: {
@@ -66,17 +95,13 @@ export default defineComponent({
 
 <style scoped>
 
-h2, h3, p {
-  color: #004AAD;
-}
-
 .confirm , .cancel {
   border: none;
   outline: none;
   border-radius: 10px;
   height: 40px;
   width: 150px;
-  margin-top: 10px;
+  /*margin-top: 10px;*/
   cursor: pointer;
   font-weight: bold;
 }
@@ -125,12 +150,12 @@ h2, h3, p {
 
 .requirements {
   overflow: auto;
-  height: 260px;
+  height: calc(100% - 60px);
 }
 
 .requirement {
   display: flex;
-  justify-content: space-evenly;
+  gap: 15px;
 }
 
 </style>

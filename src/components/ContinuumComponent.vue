@@ -1,42 +1,24 @@
 <template>
   <div style="display: grid; align-self: start; width: calc(100vw - 200px);padding: 20px;">
     <div style="display: flex; justify-content: space-between; padding: 15px 0px 55px 0">
-      <h2>Continuum</h2>
+      <h2 :class="settingsStore.colorScheme === 'dark' ? 'dark' : 'light'">Continuum</h2>
     </div>
-    <div style="height: calc(100vh - 146px)">
+    <div  style="height: calc(100vh - 146px)">
       <v-network-graph
+          v-show="!hasError"
           ref="graph"
           class="graph"
           :nodes="nodes"
           :edges="edges"
           :layouts="layouts"
+          :event-handlers="eventHandlers"
           :configs="initialConfigs"
       >
-<!--        <defs>-->
-<!--          <component is="style">-->
-<!--            @font-face { font-family: 'Material Icons'; font-style: normal; font-weight:-->
-<!--            400; src:-->
-<!--            url(https://fonts.gstatic.com/s/materialicons/v97/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2)-->
-<!--            format('woff2'); }-->
-<!--          </component>-->
-<!--        </defs>-->
-<!--        <template #override-node="{ nodeId, scale, config, ...slotProps }">-->
-<!--          <circle :r="config.radius * scale" :fill="config.color" v-bind="slotProps" />-->
-<!--          &lt;!&ndash; Use v-html to interpret escape sequences for icon characters. &ndash;&gt;-->
-<!--          <text-->
-<!--              font-family="Material Icons"-->
-<!--              :font-size="22 * scale"-->
-<!--              fill="#ffffff"-->
-<!--              text-anchor="middle"-->
-<!--              dominant-baseline="central"-->
-<!--              style="pointer-events: none"-->
-<!--              v-html="nodes[nodeId].icon"-->
-<!--          />-->
-<!--        </template>-->
         <template #edge-label="{ edge, ...slotProps }">
           <v-edge-label :text="edge.label" align="center" vertical-align="above" v-bind="slotProps" />
         </template>
       </v-network-graph>
+      <ErrorComponent v-if="hasError" @reload="async () => await fetchData()" />
     </div>
   </div>
 </template>
@@ -44,23 +26,38 @@
 <script lang="ts">
 
 import {defineComponent, reactive, ref} from "vue";
+import ErrorComponent from "@/shared/ErrorComponent.vue";
 import * as vNG from 'v-network-graph'
-import { Nodes, Edges, Layouts } from "v-network-graph"
+import { Nodes, Edges, Layouts} from "v-network-graph"
 import {useDomainStore} from "@/stores/domain";
+import {useRouter} from "vue-router";
 import dagre from "@dagrejs/dagre"
-import {useDeploymentsStore} from "@/stores/deployment";
+import {useSettings} from "@/stores/settings";
 
 export default defineComponent({
   name: "ContinuumComponent",
+  components: {ErrorComponent},
   setup: () => {
     const domainsStore = useDomainStore()
+    const settingsStore = useSettings()
+    const router = useRouter()
+    const hasError = ref(false)
     let nodes = reactive({} as Nodes)
     let edges = reactive({} as Edges)
     const layouts = reactive({
       nodes: {},
     } as Layouts)
     const graph = ref<vNG.Instance>()
+
+
+    const eventHandlers: vNG.EventHandlers = {
+      "node:click": ({ node }) => {
+        const selectedNode = node.split(":")[0]
+        router.push(`/domains/domain/${selectedNode}`)
+      },
+    }
     const fetchIE = (domainID: string) => {
+      hasError.value = false
       return new Promise((resolve, reject) => {
         domainsStore.fetchIE(domainID)
             .then(res => {
@@ -79,9 +76,15 @@ export default defineComponent({
             .then(() => {
               resolve(true)
             })
+            .catch((err) => {
+              reject(err)
+              hasError.value = true
+              console.error(err)
+            })
       })
     }
     const fetchData = async () => {
+      hasError.value = false
       return new Promise((resolve, reject) => {
         domainsStore.fetchDomains()
             .then(res => {
@@ -98,16 +101,22 @@ export default defineComponent({
               )
               generateNodesIE
                   .then(() => resolve(true))
-                  .catch(err => console.error(err))
+                  .catch(err => {
+                    reject(err)
+                    hasError.value = true
+                    console.error(err)
+                  })
             })
             .catch(err => {
               reject(err)
+              hasError.value = true
               console.error(err)
             })
       })
     }
     const nodeSize = 80
     const layout = async () => {
+      hasError.value = false
       await fetchData()
           .then(() => {
             // Automatic layout is out-of-scope from v-network-graph
@@ -119,7 +128,7 @@ export default defineComponent({
               rankdir: "LR",
               nodesep: nodeSize * 2,
               edgesep: nodeSize,
-              ranksep: nodeSize * 2,
+              ranksep: nodeSize * 6,
             })
             g.setDefaultEdgeLabel(() => ({}))
 
@@ -141,6 +150,10 @@ export default defineComponent({
               layouts.nodes[nodeId] = { x, y }
             })
           })
+      .catch(err => {
+        hasError.value = true
+        console.error(err)
+      })
 
     }
     const initialConfigs = vNG.defineConfigs({
@@ -151,7 +164,7 @@ export default defineComponent({
         onBeforeInitialDisplay: async () => await layout()
       },
       node: {
-        selectable: true,
+        selectable: false,
         draggable: false,
         normal: {
           type: "circle",
@@ -160,25 +173,26 @@ export default defineComponent({
           width: 32,
           height: 32,
           borderRadius: 4,
+          cursor: 'pointer',
           // <-- for type is "rect"
           strokeWidth: 0,
-          strokeColor: "#000000",
+          strokeColor: settingsStore.colorScheme === 'dark' ? "#E6EAF6" : "#000000",
           strokeDasharray: "0",
           color: node => node.color,
         },
-        hover: {
-          type: "circle",
-          radius: 16,
-          // for type is "rect" -->
-          width: 32,
-          height: 32,
-          borderRadius: 4,
-          // <-- for type is "rect"
-          strokeWidth: 0,
-          strokeColor: "#000000",
-          strokeDasharray: "0",
-          color: "#dd2288",
-        },
+        // hover: {
+        //   type: "circle",
+        //   radius: 16,
+        //   // for type is "rect" -->
+        //   width: 32,
+        //   height: 32,
+        //   borderRadius: 4,
+        //   // <-- for type is "rect"
+        //   strokeWidth: 0,
+        //   strokeColor: settingsStore.colorScheme === 'dark' ? "#E6EAF6" : "#000000",
+        //   strokeDasharray: "0",
+        //   color: "#dd2288",
+        // },
         selected: {
           type: "circle",
           radius: 16,
@@ -188,7 +202,7 @@ export default defineComponent({
           borderRadius: 4,
           // <-- for type is "rect"
           strokeWidth: 0,
-          strokeColor: "#000000",
+          strokeColor: settingsStore.colorScheme === 'dark' ? "#E6EAF6" : "#000000",
           strokeDasharray: "0",
           color: "#4466cc",
         },
@@ -198,7 +212,8 @@ export default defineComponent({
           directionAutoAdjustment: true,
           fontSize: 11,
           lineHeight: 1.6,
-          color: "#000000",
+          color: settingsStore.colorScheme === 'dark' ? "#E6EAF6" : "#000000",
+          cursor: 'pointer',
           margin: 4,
           direction: "south",
           background: {
@@ -220,7 +235,10 @@ export default defineComponent({
         },
       },
       edge: {
-        selectable: true,
+        selectable: false,
+        label: {
+          color: settingsStore.colorScheme === 'dark' ? "#E6EAF6" : "#000000"
+        },
         normal: {
           width: 3,
           color: "#4466cc",
@@ -279,7 +297,11 @@ export default defineComponent({
       edges,
       layouts,
       initialConfigs,
-      graph
+      settingsStore,
+      graph,
+      hasError,
+      eventHandlers,
+      fetchData
     }
   }
 })

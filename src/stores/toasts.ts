@@ -7,8 +7,9 @@ import {defineStore} from "pinia";
 interface Toast {
     label: string;
     success: boolean;
-    data?: any;
-    autoRemove: boolean
+    data?: unknown; // Additional data if needed (not yet implemented)
+    autoRemove: boolean;
+    timeoutId?: any
 }
 
 export const useToastsStore = defineStore('toasts', {
@@ -19,10 +20,18 @@ export const useToastsStore = defineStore('toasts', {
     },
     actions: {
         appendToast(toast: Toast) {
+            // Update the timeoutId for the toast
+            toast.timeoutId = setTimeout(() => {
+                this.removeToast(toast)
+            }, 3500)
             this.toasts.push(toast)
+            return this.$state.toasts
         },
-        removeToast(index: number) {
-            this.toasts.splice(index, 1)
+        removeToast(toast: Toast) {
+            // Clear also the timeout setted for the toast
+            clearTimeout(toast.timeoutId)
+            this.$state.toasts = this.toasts.filter(t => t.timeoutId !== toast.timeoutId)
+            return this.$state.toasts
         }
     }
 })

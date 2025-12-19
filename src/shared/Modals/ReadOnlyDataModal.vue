@@ -4,7 +4,7 @@
   </h3>
   <div class="items">
     <ul class="item-list">
-      <li v-for="item in data.data" :key="item">{{item}}</li>
+      <li v-for="item in data.data" :key="item"><p>{{item}}</p></li>
     </ul>
   </div>
 </template>
@@ -20,9 +20,11 @@ export default defineComponent({
 
 <style scoped>
 
-h2, h3, p {
-  color: #004AAD;
+h3 {
+  max-width: 90%;
+  justify-self: center;
 }
+
 
 .item-list {
   list-style: none;

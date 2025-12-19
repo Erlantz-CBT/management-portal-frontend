@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 import axios from 'axios'
 
 /**
- * Domain store
+ * Deployment store
  */
 export const useDeploymentsStore = defineStore('deployments', {
     state: () => ({
@@ -17,12 +17,26 @@ export const useDeploymentsStore = defineStore('deployments', {
         fetchDeployment(deploymentId: string) {
             return axios
                 .get(`/portal-backend/${process.env.VUE_APP_DEPLOYMENTS_ENDPOINT}/services/${deploymentId}`)
+                .then(res => {
+                    console.log(res)
+                    return res
+                })
+        },
+        getDeploymentStatus(deploymentId: string) {
+            return axios
+                .get(`/portal-backend/${process.env.VUE_APP_DEPLOYMENTS_ENDPOINT}/services/${deploymentId}/components`)
+                .then((r: any) => {
+                    return r.data
+                        .map((e: any) => e.serviceComponentStatus)
+                        .every((s: string) => s.split(":ServiceComponentStatus:")[1] === "Running")
+                })
+                .catch(err => console.error(err))
         },
         fetchDeployments() {
             return axios
                 .get(`/portal-backend/${process.env.VUE_APP_DEPLOYMENTS_ENDPOINT}/services`)
         },
-        deleteDeployment(deploymentId: string) {
+        stopDeployment(deploymentId: string) {
             return axios
                 .delete(`/portal-backend/${process.env.VUE_APP_DEPLOYMENTS_ENDPOINT}/services/${deploymentId}`)
         },
@@ -32,7 +46,16 @@ export const useDeploymentsStore = defineStore('deployments', {
         },
         newDeployment(deployment: any){
             return axios
-                .post(`/portal-backend/${process.env.VUE_APP_DEPLOYMENTS_ENDPOINT}/`, deployment)
+                .post(`/portal-backend/${process.env.VUE_APP_DEPLOYMENTS_ENDPOINT}/`,
+                    deployment)
+        },
+        deleteDeployment(deploymentId: string) {
+            return axios
+                .delete(`/portal-backend/${process.env.VUE_APP_DEPLOYMENTS_ENDPOINT}/services/${deploymentId}/clear`)
+        },
+        startDeployment(deploymentId: string) {
+            return axios
+                .post(`/portal-backend/${process.env.VUE_APP_DEPLOYMENTS_ENDPOINT}/services/${deploymentId}`, {})
         }
     }
 })

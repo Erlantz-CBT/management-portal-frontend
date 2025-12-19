@@ -6,6 +6,7 @@ export const useLoaderStore = defineStore('loader', {
     state: () => {
         return {
             loading: false,
+            hasLoader: true,
             requests: [] as string[]
         }
     },
@@ -17,7 +18,9 @@ export const useLoaderStore = defineStore('loader', {
                 const token = AuthenticationService.Token()
                 request.headers.Authorization = `Bearer ${token}`
                 if (request) {
-                    this.loading = true
+                    if (this.hasLoader) {
+                        this.loading = true
+                    }
                     this.requests.push(request.url)
                 }
                 return request
@@ -29,16 +32,16 @@ export const useLoaderStore = defineStore('loader', {
                 if (response) {
                     this.requests = this.requests.filter(r => !response.request.responseURL.includes(r))
                     // If there is any request pending, keep the loading status
-                    this.loading = this.requests.length > 0
+                    if (this.hasLoader) {
+                        this.loading = this.requests.length > 0
+                    }
                 }
                 return response
             }, (error) => {
+                this.requests = this.requests.filter(r => !error.request.responseURL.includes(r))
                 this.loading = false
                 return Promise.reject(error)
             } )
-        },
-        isLoading() {
-            this.loading = true
         }
     }
 })

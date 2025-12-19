@@ -8,6 +8,15 @@ metadata:
 spec:
   type: {{ .Values.frontend.service.type }}
   ports:
+    {{- if .Values.frontend.tls.enabled }}
+    - name: https
+      port: {{ .Values.frontend.service.ports.https.port }}
+      targetPort: {{ .Values.frontend.service.ports.https.targetPort }}
+      protocol: {{ .Values.frontend.service.ports.https.protocol }}
+      {{- if and (or (eq .Values.frontend.service.type "NodePort") (eq .Values.frontend.service.type "LoadBalancer")) (not (empty .Values.frontend.service.ports.https.nodePort)) }}
+      nodePort: {{ .Values.frontend.service.ports.https.nodePort }}
+      {{- end }}
+    {{- else }}
     - name: web
       port: {{ .Values.frontend.service.ports.web.port }}
       targetPort: {{ .Values.frontend.service.ports.web.targetPort }}
@@ -15,5 +24,6 @@ spec:
       {{- if and (or (eq .Values.frontend.service.type "NodePort") (eq .Values.frontend.service.type "LoadBalancer")) (not (empty .Values.frontend.service.ports.web.nodePort)) }}
       nodePort: {{ .Values.frontend.service.ports.web.nodePort }}
       {{- end }}
+    {{- end }}
   selector:
     {{- include "frontend.selectorLabels" . | nindent 4 }}

@@ -51,6 +51,9 @@ spec:
             - name: api
               containerPort: {{ .Values.backend.service.ports.api.containerPort }}
               protocol: {{ .Values.backend.service.ports.api.protocol }}
+            - name: notifications
+              containerPort: {{ .Values.backend.service.ports.notifications.containerPort }}
+              protocol: {{ .Values.backend.service.ports.notifications.protocol }}
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
           {{- with .Values.backend.envVars }}
@@ -59,10 +62,24 @@ spec:
               value: {{ .logLevel | quote }}
             - name: SECURITY_LOG_LEVEL
               value: {{ .securityLogLevel | quote }}
+            - name: LDAP_LOG_LEVEL
+              value: {{ .ldapLogLevel | quote }}
             - name: ORION_URL
               value: {{ .orionUrl | quote }}
             - name: KEYCLOAK_URL
               value: {{ .keycloakUrl | quote }}
+            - name: KEYCLOAK_REALM
+              value: {{ .keycloakRealm | quote }}
             - name: HLO_FE_URL
               value: {{ .hloFeUrl | quote }}
+            - name: ENTRYPOINT_BALANCER_URL
+              value: {{ .epBalancerUrl | quote }}
+            - name: ENTRYPOINT_BALANCER
+              value: {{ .epBalancerEnabled | quote }}
+            - name: LDAP_URL
+              value: {{ .ldapUrl | quote }}
+            - name: LDAP_USERNAME
+              value: {{ .ldapUsername | quote }}
+            - name: LDAP_PASSWORD
+              value: {{ .ldapPassword | quote }}
           {{- end }}

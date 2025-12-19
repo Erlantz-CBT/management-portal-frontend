@@ -15,14 +15,13 @@ frontend:
   replicaCount: 1
 
   # Configuration of the container image.
-  imagePullSecrets:
-    - name: aeros-common-deployments
+  imagePullSecrets: []
   image:
-    repository: registry.gitlab.aeros-project.eu/aeros-public/common-deployments/management-portal/frontend
+    repository: eclipseaerios/management-portal-frontend
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
     pullPolicy: IfNotPresent
- 
+
   # Configuration of the service: type and ports.
   service:
     type: NodePort
@@ -33,6 +32,30 @@ frontend:
         containerPort: 80
         nodePort: ""
         protocol: TCP
+      https:
+        nodePort: ""
+        port: 443
+        targetPort: 443
+        containerPort: 443
+        protocol: TCP
+
+  tls:
+    enabled: false
+    existingSecret: ""
+    certs:
+      cert: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVOekNDQXgrZ0F3SUJBZ0lVUjJSYUpjODZZS2MreURiM3J2OSsrdzFmeUNZd0RRWUpLb1pJaHZjTkFRRUwKQlFBd2dhb3hDekFKQmdOVkJBWVRBa1ZUTVJFd0R3WURWUVFJREFoV1lXeGxibU5wWVRFUk1BOEdBMVVFQnd3SQpWbUZzWlc1amFXRXhMREFxQmdOVkJBb01JMVZ1YVhabGNuTnBkR0YwSUZCdmJHbDBaV051YVdOaElHUmxJRlpoCmJHVnVZMmxoTVF3d0NnWURWUVFMREFOVlVGWXhHVEFYQmdOVkJBTU1FR0ZsY205ekxYQnliMnBsWTNRdVpYVXgKSGpBY0Jna3Foa2lHOXcwQkNRRVdEM0poZG1GbllYSXlRSFZ3ZGk1bGN6QWVGdzB5TkRFeE1EY3hNVEV4TWpKYQpGdzB6TkRFeE1EVXhNVEV4TWpKYU1JR3FNUXN3Q1FZRFZRUUdFd0pGVXpFUk1BOEdBMVVFQ0F3SVZtRnNaVzVqCmFXRXhFVEFQQmdOVkJBY01DRlpoYkdWdVkybGhNU3d3S2dZRFZRUUtEQ05WYm1sMlpYSnphWFJoZENCUWIyeHAKZEdWamJtbGpZU0JrWlNCV1lXeGxibU5wWVRFTU1Bb0dBMVVFQ3d3RFZWQldNUmt3RndZRFZRUUREQkJoWlhKdgpjeTF3Y205cVpXTjBMbVYxTVI0d0hBWUpLb1pJaHZjTkFRa0JGZzl5WVhaaFoyRnlNa0IxY0hZdVpYTXdnZ0VpCk1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRQ3VrNGM0Q3E3a1JZT1VnaFBUNGdUM2Y3Zm4KOCs0dFF5YzNFeVI2akhtajN1eE9iaVNwSlJHYVFnM0RXRVY3dnJjU1h5QzN4S0xtKzFpRk1hOW56eUxaWjRiOApETUh3RFZvcnRKc3FsUlU2N3FZTlZuaXZHdWNLQnVOOFRlcjNFYVhRSHNWUmhtS015U2FWWTh3SkNWaWw0QWNRCkRLbFJFMDZJRG9ZYXE1UTZ0RDdEWnNJVVRvTTJHWktDRFpGSk0zdGhScjlHR2trSDhTNk8vUHcwWDBGbVpvM0EKTWVkR3VxN05yUmhGOFJFNHZ6S3MrSkg5VFhyc3QrZjJmVE1wc0xiNjNhTmR0WFVPSHBPZW9xdU16VnYwc096LwpnNWJtRWFMNGdYVHZ1U1ZXQ243T0FOajFiRmJWM1ZFS0d0WXorOVhCOWd4QUVUY0lua3VrME5SZ0U2MWxBZ01CCkFBR2pVekJSTUIwR0ExVWREZ1FXQkJRaDdZMUQrU3d1RHh6NHBCTGtNaEU4UlI2akNEQWZCZ05WSFNNRUdEQVcKZ0JRaDdZMUQrU3d1RHh6NHBCTGtNaEU4UlI2akNEQVBCZ05WSFJNQkFmOEVCVEFEQVFIL01BMEdDU3FHU0liMwpEUUVCQ3dVQUE0SUJBUUNqaFZpL1VlNDgyZ1RYQ3h1Tzd4aWxMWHRaMEprNmZlWXhNakhialpHTUIxcDUwdkVSCmhyVzJVRDFWRmpQSUNDQitqUHZ4TmltbUdUSG9DaXdWdnJPN0dta3ZiRjhJZU9Xa0NmK3o1T2htMEFNRk5TcnMKMmJoMGtiUG1lbEhYUlp3L1M3aTRsWFBUSDNlSHM3NlJtRlFwNTlzK0pKVEpjZ2hyalBLM3pNVW16TkJ5WUpEWgpjZElScE9YNXZLUXM2d3M3MGdkYnNodnljMWVsMlkxTmRldk5rRTFMbU55cGVmaGtRU0dsMHRWeVRDUW1jaFprClA4SUttYWViV0ZkbGdZQjQvZTFpR0p6TDEyL2xoeE03NnZaRkNrcXQzU0NLdkJWOSs5N3d6UTlVVytTTHlOV1YKanBRRHp2R1hhd1h0Q3hxRlhMZTBvWmZqT2VyRTBmR2ovdnJiCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+      key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRQ3VrNGM0Q3E3a1JZT1UKZ2hQVDRnVDNmN2ZuOCs0dFF5YzNFeVI2akhtajN1eE9iaVNwSlJHYVFnM0RXRVY3dnJjU1h5QzN4S0xtKzFpRgpNYTluenlMWlo0YjhETUh3RFZvcnRKc3FsUlU2N3FZTlZuaXZHdWNLQnVOOFRlcjNFYVhRSHNWUmhtS015U2FWClk4d0pDVmlsNEFjUURLbFJFMDZJRG9ZYXE1UTZ0RDdEWnNJVVRvTTJHWktDRFpGSk0zdGhScjlHR2trSDhTNk8KL1B3MFgwRm1abzNBTWVkR3VxN05yUmhGOFJFNHZ6S3MrSkg5VFhyc3QrZjJmVE1wc0xiNjNhTmR0WFVPSHBPZQpvcXVNelZ2MHNPei9nNWJtRWFMNGdYVHZ1U1ZXQ243T0FOajFiRmJWM1ZFS0d0WXorOVhCOWd4QUVUY0lua3VrCjBOUmdFNjFsQWdNQkFBRUNnZ0VBRzloZHJNZHRjbTBSQ2Y2K2RXRWJiRE96ckh4b3JORUZnQUFlWlNxalcwczcKRTE1M25BQVU0Tzh3dlV3RzF6QktDSlRpUmRXSUswSURja2xFd2xEVWJPdFpxVG5LdEVTWThaZ3UyTG1yUjNsWgp4STVhbFFsOE9RbjB2bmE2SjlycGdQcnJlNitzNStwTXJHN2MxRU1vbjlxT0hkWDdLcnFpMzhvN1F5VkRjU0piCnpFM3VFdkxpbWFiWFltY3Uram0zV21FQWJZcGR6TDRNcUkzWUJtbFhoUzFsck5XR0sxMkQ5UUVCbTEwSEdzSEIKei9qTDFYa3lYR3RMWWJQUXZVZzdjQ0dBU0tDa0ZvSXBGUDRVRkErZ2ZJS0FOOVl4ZDFBR3RIZlBlWTFXRmRwcQo3b0F3Y3d4KzhkM1dIVFk1SU1ueEVVUEczMUVjRnhYSmVZWnFhZlJqa1FLQmdRREpVQzJPenQyOUF2eU9ocWl3CnZMZzd4SG1ENXBxNHlIZlBUeFhLcnd0Mm1rYVFYSDZCQ0tMVEtNMlFHNzBZcVZUNVhkYWFKalFUdCtpMzU4MGgKRWsyK1JzeG5XblRMdStsKzRqbytNbE45d2IxVm9FL3BmUVc2c3hGS2FZUk5Dc2dMa21mVjE2d1NoMCtiSVF6dAo5czZsWXplbXBiOXJmTmwweTd2RW5IdlZFUUtCZ1FEZC8vK2lKeFIrcHJoRFNlejRrRHhrbThJZjA2OFEwdWhWCklHaXVyVUZnbTdqMnlqUnpCZDJqSzIyZXYzRVVrMjlIZzRuaVNFMnY3UzJzekJhcXNzYTdjZTF1b1YvQ0tBeEIKQkNqZnQrQTNjdzk5OTYzQXFNbThJL0tkQ3ZXRU84dEg3aXorZ1pxc3dwRm90M3dFb29Pdlc1NXoxRWFJTUFhNgpaU3gvLzZ3REZRS0JnRENlb0tJZzdBUytOK2prTk5HYWdwUk11MXhUMFlKWFNEaFZUVm9LTkthTVZBYUJrRHZ4CnJnRjVsVXY4cHdyUnVxZ1BOY2s4K003YVYrWXlvYVFmRzQrYzRia0VhN2pZeFdmVGsyVjZHaGdCTm96N2p0RkIKVktUbW9vSnFRWDJwNE82S2lYRm9DVExnWXlXQU1mTTI3R21kTU0rYXNFUnhmc05xZ1FyWEVFRkJBb0dBU0lBaApZVGg0RmdDbXJyc0czQXBtM3NpTGRrOXduZ0x6QTFJSlBmcXhIamJkQ2lQeFN4dEFUZGlSL1VVeVRmRDBaNXVLCnZVNjFxRjNDQyt1Ky8xSlJXc2dUTFkwZ004MVdheWxMbS94MkNrWFdhbUluNllKMkY2NTV2bFhrNXFHTWV0cEsKOFhjc0ozMkhkWFp1MXlpbjd1M3g2b3dKMk5JdWNGTTRYRGtJV1IwQ2dZRUFzVWhLbXdDVjRTKzdaVmM5QVdOYgprazE3YVpOczNWRmZ1TTAzM0J2eDBxWkN5NitjL096VlFHdzdJMlBiRnZ5Vko2RUFDdGp1VGxSUFd2T29KbW0zCjNOaU9kUjI2R0JzalJndmVaSHpOeXgvU0NDbU5KZ1RGTGxEMG1vNUJtNmZ4dnQweUNGeEdDaVdsa0R6ZmllR0wKc3p3aWFBMkY0V3lzVGgwZTZGcFc3ek09Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K
+
+  ingress:
+    certManagerIssuer: letsencrypt-prod
+    certManagerClusterIssuer: letsencrypt-prod
+    cors: true
+    className: nginx
+    enabled: false
+    hostname: portal.aerios-project.eu
+    path: "/"
+    tls:
+      enabled: true
 
   resources: {}
   autoscaling:
@@ -41,11 +64,11 @@ frontend:
   securityContext: {}
 
   keycloak:
-    realm: keycloack-openldap
-    url: https://keycloak.cf-mvp-domain.aeros-project.eu/auth/
+    realm: keycloack-realm
+    url: https://keycloak.aerios-project.eu/auth/
     sslRequired: all
     resource: managementportal
-    
+
   # Configure this parameters to deploy the component in specific K8s node(s).
   nodeSelector: {}
   tolerations: []
@@ -57,14 +80,13 @@ backend:
   replicaCount: 1
 
   # Configuration of the container image.
-  imagePullSecrets:
-    - name: aeros-common-deployments
+  imagePullSecrets: []
   image:
-    repository: registry.gitlab.aeros-project.eu/aeros-public/common-deployments/management-portal/backend
+    repository: eclipseaerios/management-portal-backend
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
     pullPolicy: IfNotPresent
-  
+
   # Configuration of the service: type and ports.
   service:
     type: NodePort
@@ -75,6 +97,12 @@ backend:
         containerPort: 8080
         nodePort: ""
         protocol: TCP
+      notifications:
+        nodePort: ""
+        port: 8082
+        targetPort: 8082
+        containerPort: 8082
+        protocol: TCP
 
   resources: {}
   autoscaling:
@@ -82,17 +110,21 @@ backend:
 
   podSecurityContext: {}
   securityContext: {}
-    
+
   # Include here the environment variables to be used in containers section of the component's manifest.
   envVars:
     logLevel: DEBUG
     securityLogLevel: DEBUG
-    orionUrl: http://orion-ld-broker:1026/ngsi-ld/v1/entities
-    keycloakUrl: https://keycloak.cf-mvp-domain.aeros-project.eu/auth/realms/keycloack-openldap/protocol/openid-connect/certs
-    hloFeUrl: http://hlo-fe-service:8081
+    ldapLogLevel: DEBUG
+    orionUrl: http://orion-ld-broker.default.svc.cluster.local:1026/ngsi-ld/v1/entities
+    keycloakUrl: https://keycloak.aerios-project.eu
+    keycloakRealm: keycloack-realm
+    hloFeUrl: http://hlo-fe-service.default.svc.cluster.local:8081
+    ldapUrl: ldap://openldap.default.svc.cluster.local:389
+    ldapUsername: cn=admin,dc=example,dc=org
+    ldapPassword: ""
 
   # Configure this parameters to deploy the component in specific K8s node(s).
   nodeSelector: {}
   tolerations: []
   affinity: {}
-
