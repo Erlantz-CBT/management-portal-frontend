@@ -27,7 +27,7 @@ services:
       - LDAP_LOG_LEVEL=DEBUG
       - ORION_URL=http://127.0.0.1:1026/ngsi-ld/v1/entities
       - KEYCLOAK_URL=https://keycloak.aerios-project.eu
-      - KEYCLOAK_REALM=keycloack-realm
+      - KEYCLOAK_REALM=keycloak-realm
       - HLO_FE_URL=http://127.0.0.1:8081
       - LDAP_URL=http://127.0.0.1:389
       - LDAP_USERNAME=ldap-user

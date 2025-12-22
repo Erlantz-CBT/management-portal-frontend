@@ -30,3 +30,6 @@ helm-chart
 
 # git
 .git
+
+# yarn (use npm instead)
+yarn.lock
