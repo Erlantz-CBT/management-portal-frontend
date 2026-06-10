@@ -12,6 +12,8 @@ data:
       "realm": {{ .realm | quote }},
       "auth-server-url": {{ .url | quote }},
       "ssl-required": {{ .sslRequired | quote }},
-      "resource": {{ .resource | quote }}
+      "resource": {{ .resource | quote }},
+      "responseMode": {{ .responseMode | quote }},
+      "pkceMethod": {{ .pkceMethod | quote }}
       {{- end }}
     }

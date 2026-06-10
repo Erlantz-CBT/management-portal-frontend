@@ -68,6 +68,7 @@ frontend:
     url: https://keycloak.aerios-project.eu/auth/
     sslRequired: all
     resource: managementportal
+    pkceMethod: S256
 
   proxyDnsResolver: kube-dns.kube-system.svc.cluster.local
 

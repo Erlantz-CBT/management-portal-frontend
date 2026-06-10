@@ -1,7 +1,8 @@
 {
-  "realm": "keycloak-realm",
-  "auth-server-url": "https://keycloak.aerios-project.eu/auth/",
+  "realm": "keycloack-openldap",
+  "auth-server-url": "https://aeros-keycloak-26.satrd-cpd1.imm.upv.es/auth/",
   "ssl-required": "all",
   "resource": "dashboard",
-  "enable-pkce": true
+  "responseMode": "fragment",
+  "pkceMethod": "S256"
 }

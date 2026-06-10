@@ -68,6 +68,9 @@ frontend:
     url: https://keycloak.aerios-project.eu/auth/
     sslRequired: all
     resource: managementportal
+    pkceMethod: S256
+
+  proxyDnsResolver: kube-dns.kube-system.svc.cluster.local
 
   # Configure this parameters to deploy the component in specific K8s node(s).
   nodeSelector: {}
@@ -120,6 +123,8 @@ backend:
     keycloakUrl: https://keycloak.aerios-project.eu
     keycloakRealm: keycloack-realm
     hloFeUrl: http://hlo-fe-service.default.svc.cluster.local:8081
+    epBalancerUrl: http://entrypoint-balancer-api.default.svc.cluster.local:8080
+    epBalancerEnabled: false
     ldapUrl: ldap://openldap.default.svc.cluster.local:389
     ldapUsername: cn=admin,dc=example,dc=org
     ldapPassword: ""
