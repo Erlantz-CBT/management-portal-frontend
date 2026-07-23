@@ -64,8 +64,8 @@ frontend:
   securityContext: {}
 
   keycloak:
-    realm: keycloack-realm
-    url: https://keycloak.aerios-project.eu/auth/
+    realm: keycloak-realm
+    url: https://keycloak.aerios-project.eu
     sslRequired: all
     resource: managementportal
     pkceMethod: S256
@@ -121,7 +121,7 @@ backend:
     ldapLogLevel: DEBUG
     orionUrl: http://orion-ld-broker.default.svc.cluster.local:1026/ngsi-ld/v1/entities
     keycloakUrl: https://keycloak.aerios-project.eu
-    keycloakRealm: keycloack-realm
+    keycloakRealm: keycloak-realm
     hloFeUrl: http://hlo-fe-service.default.svc.cluster.local:8081
     epBalancerUrl: http://entrypoint-balancer-api.default.svc.cluster.local:8080
     epBalancerEnabled: false

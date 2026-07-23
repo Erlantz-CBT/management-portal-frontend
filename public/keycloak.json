@@ -1,6 +1,6 @@
 {
-  "realm": "keycloack-openldap",
-  "auth-server-url": "https://aeros-keycloak-26.satrd-cpd1.imm.upv.es/auth/",
+  "realm": "keycloak-realm",
+  "auth-server-url": "https://keycloak.aerios-project.eu",
   "ssl-required": "all",
   "resource": "dashboard",
   "responseMode": "fragment",

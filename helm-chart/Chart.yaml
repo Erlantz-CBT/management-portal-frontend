@@ -2,7 +2,7 @@ apiVersion: v2
 name: management-portal
 description: aeriOS Management Portal
 type: application
-version: 1.2.0
+version: 1.3.0
 appVersion: "1.3.0"
 keywords:
   - ravaga-helm-chart-generator
