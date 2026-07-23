@@ -1,7 +1,8 @@
 {
   "realm": "keycloak-realm",
-  "auth-server-url": "https://keycloak.aerios-project.eu/auth/",
+  "auth-server-url": "https://keycloak.aerios-project.eu",
   "ssl-required": "all",
   "resource": "dashboard",
-  "enable-pkce": true
+  "responseMode": "fragment",
+  "pkceMethod": "S256"
 }

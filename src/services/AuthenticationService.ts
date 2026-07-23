@@ -1,8 +1,13 @@
 import Keycloak from "keycloak-js";
 
+const response = await fetch('/keycloak.json');
+const config = await response.json();
 
-
-const keycloak = new Keycloak()
+const keycloak = new Keycloak({
+    url: config["auth-server-url"],
+    realm: config.realm,
+    clientId: config.resource
+});
 
 
 interface CbOneParam<T1 = void, T2 = void> {
@@ -17,7 +22,7 @@ interface CbOneParam<T1 = void, T2 = void> {
 
 const Login = (onAuthenticatedCB: CbOneParam) => {
     keycloak
-        .init({onLoad: "login-required", responseMode: "query"})
+        .init({onLoad: "login-required", responseMode: config.responseMode, checkLoginIframe: false, pkceMethod: config.pkceMethod})
         .then(function (authenticated) {
             authenticated ? onAuthenticatedCB() : alert("non authenticated user");
             if (authenticated) {
